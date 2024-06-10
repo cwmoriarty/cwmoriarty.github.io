@@ -12,7 +12,7 @@
         }
         #tasktimer {
             font-size: 48px;
-            margin: 20px;
+            margin: 4x;
         }
         button {
             padding: 10px 20px;
@@ -22,7 +22,7 @@
     </style>
 </head>
 <body>
-    <h1>HourGlass Alpha ⏳😎</h1>
+    <h1 id="title">HourGlass Alpha ⏳😎</h1>
     <p>Minutes: <input type="number" id="minutesInput" placeholder="Enter minutes" min="1">
     </p>
 
@@ -40,9 +40,14 @@
         <button onclick="addTask()">Add  Task</button>
         <button onclick="completeTask()">Complete Task</button>
     </p>
-
+    <p></p>
+    Actual time remaining:
     <div id="timer">00:00</div>
-    <p><div id="tasktimer">00:00</div></p>
+</p>
+
+
+    <p>
+        Time for each task:<div id="tasktimer">00:00</div></p>
     
     <button id="start" onclick="toggleTimer()">Start</button>
 
@@ -90,7 +95,7 @@
             if (timeRemaining <= 0) {
                 clearInterval(timerInterval);
                 timerInterval = null;
-                //alert("Time's up!");
+                document.getElementById('title').textContent = 'HourGlass Alpha ⏳😵'
                 return;
             }
 
@@ -104,12 +109,12 @@
 
 
             document.getElementById('timer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                `${minutes.toString()}:${seconds.toString().padStart(2, '0')}`;
 
 
             document.getElementById('tasktimer').textContent = 
-                `${taskminutes.toString().padStart(2, '0')}:${taskseconds.toString().padStart(2, '0')}`; 
-        }
+                `${taskminutes.toString()}:${taskseconds.toString().padStart(2, '0')}`; 
+        }a
     </script>
 </body>
 </html>
