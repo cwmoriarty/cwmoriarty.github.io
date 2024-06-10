@@ -1,0 +1,113 @@
+<head>
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+        }
+        #tasktimer {
+            font-size: 30px;
+            margin: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HourGlass Alpha ⏳😎</h1>
+    <p>Minutes: <input type="number" id="minutesInput" placeholder="Enter minutes" min="1">
+    </p>
+
+    <p>Tasks: <input type="number" id="tasksInput" placeholder="Enter tasks" min="0">
+    </p>
+
+        <!--<div id="taskInputs">
+            <input type="text" class="task-input1" placeholder="Enter task #1"> 
+            <input type="text" class="task-input2" placeholder="Enter task #2">
+            <input type="text" class="task-input3" placeholder="Enter task #3"> 
+        </div>
+        -->
+
+        <p>
+        <button onclick="addTask()">Add  Task</button>
+        <button onclick="completeTask()">Complete Task</button>
+    </p>
+
+    <div id="timer">00:00</div>
+    <p><div id="tasktimer">00:00</div></p>
+    
+    <button id="start" onclick="toggleTimer()">Start</button>
+
+    <script>
+        let timerInterval;
+        let timeRemaining;
+        let isPaused = true;
+        let countTasks=3;
+
+        function toggleTimer() {
+            const minutesInput = document.getElementById('minutesInput').value;
+            if (isPaused) {
+                if (!timerInterval) {
+                    timeRemaining = parseInt(minutesInput) * 60;
+                }
+                timerInterval = setInterval(updateTimer, 1000);
+                isPaused = false;
+                document.getElementById('start').textContent = 'Pause'
+            } else {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                isPaused = true;
+                document.getElementById('start').textContent = 'Start'
+            }
+        }
+
+
+        function addTask() {
+            countTasks++;
+            document.getElementById('tasksInput').value = countTasks;
+            /*const newInput = document.createElement('input');
+            newInput.type = 'text';
+            newInput.className = 'task-input'+countTasks;
+            newInput.placeholder = 'Enter task #'+countTasks; */
+
+        }
+
+
+        function completeTask() {
+            countTasks-=1;
+            document.getElementById('tasksInput').value = countTasks;   
+        }
+
+        function updateTimer() {
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                //alert("Time's up!");
+                return;
+            }
+
+            timeRemaining--;
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+
+            taskTimeRemaining=Math.floor(timeRemaining/countTasks);
+            const taskminutes = Math.floor(taskTimeRemaining / 60);
+            const taskseconds = Math.floor(taskTimeRemaining % 60);
+
+
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+
+            document.getElementById('tasktimer').textContent = 
+                `${taskminutes.toString().padStart(2, '0')}:${taskseconds.toString().padStart(2, '0')}`; 
+        }
+    </script>
+</body>
+</html>
