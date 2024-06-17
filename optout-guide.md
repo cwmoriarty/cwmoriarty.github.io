@@ -7,7 +7,8 @@ Contributions are welcome, please feel free to submit a pull request or email th
 
 
 ## Phase 1: ~30 minutes of effort, ~80% reduction in junk mail and calls
-Global Opt out for Junk Mail/unsolicited calls
+
+Opt out for Junk Mail/unsolicited calls
 
 
 ### [https://www.donotcall.gov/](https://www.donotcall.gov/)
@@ -32,10 +33,10 @@ Global Opt out for Junk Mail/unsolicited calls
 
 ### [https://onerep.com/promo/](https://onerep.com/promo/)
 
- - [ ] Onerep are also worth trying. Use the Free tier.
+ - [ ] **Onerep** are also worth trying. Use the Free tier.
 
 ### [https://www.kanary.com/](https://www.kanary.com/)
- - [ ] Kanary have a free 14 day trial, worth trying. Seems less broad and accurate (fewer checks, some false positives on name matches) than Incogni. YMMV.
+ - [ ] **Kanary** have a free 14 day trial, worth trying. Seems less broad and accurate (fewer checks, some false positives on name matches) than Incogni. YMMV.
 
 
 ## Phase 1c: Specific catalogs/mailers/marketing material
@@ -54,27 +55,42 @@ Keep all of your junk mail in a pile for 1 month. Reach out to each one of the s
 
 
  - [ ] Visit the URL, find the contact form or email address, send a message like:
+
 ```
-My name is XXXX, I live at YYYY. I am writing to request that you permanently opt me out and remove my personal information from any sales or rentals. This includes my name, address, phone number, and any other data you may have collected about me.
+My name is XXXX XXXX, my mailing address is  YYYY and my phone number is 000-000-0000.
+
+I am writing to request that you permanently opt me out and remove my personal information from any sales or rentals.
+
+This includes my name, address, phone number (provided above), and any other data you may have collected about me.
+
 I have the right to control my personal information, and I do not want it to be shared with third parties.
-Please confirm receipt of this request and let me know how long it will take for my information to be completely removed from your systems.”
+
+Please confirm receipt of this request and let me know how long it will take for my information to be completely removed from your systems.
+
+Thank you.
+”
 ```
 
+<!--
+https://mail.google.com/mail/?view=cm&fs=1&to=support@spokeo.com,customercare@spokeo.com&su=Data Removal&body=My%20name%20is%20XXXX%2C%20I%20live%20at%20YYYY.%20I%20am%20writing%20to%20request%20that%20you%20permanently%20opt%20me%20out%20and%20remove%20my%20personal%20information%20from%20any%20sales%20or%20rentals.%20This%20includes%20my%20name%2C%20address%2C%20phone%20number%2C%20and%20any%20other%20data%20you%20may%20have%20collected%20about%20me.%0AI%20have%20the%20right%20to%20control%20my%20personal%20information%2C%20and%20I%20do%20not%20want%20it%20to%20be%20shared%20with%20third%20parties.%0APlease%20confirm%20receipt%20of%20this%20request%20and%20let%20me%20know%20how%20long%20it%20will%20take%20for%20my%20information%20to%20be%20completely%20removed%20from%20your%20systems.
+-->
 
-1. Spokeo- [https://www.spokeo.com/optout ](https://www.spokeo.com/optout)
-    - support@spokeo.com, customercare@spokeo.com
-2. Radaris- [https://radaris.com/control/privacy ](https://radaris.com/control/privacy)
-    - support@radaris.com, info@radaris.com
-3. Whitepages- [http://www.whitepages.com/suppression_requests ](http://www.whitepages.com/suppression_requests)
-    - support@whitepages.com
-4. Intelius- [https://www.intelius.com/opt-out/submit/](https://www.intelius.com/opt-out/submit/)
-5. BeenVerified-[ https://www.beenverified.com/faq/opt-out/](https://www.beenverified.com/faq/opt-out/)
-6. Acxiom- [https://isapps.acxiom.com/optout/optout.aspx](https://isapps.acxiom.com/optout/optout.aspx)
-7. Infotracer- [https://infotracer.com/optout/](https://infotracer.com/optout/)
-8. Lexis Nexis- [https://optout.lexisnexis.com/ ](https://optout.lexisnexis.com/)and [https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx](https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx)
-9. TruePeopleSearch- [https://www.truepeoplesearch.com/removal](https://www.truepeoplesearch.com/removal)
+1. Spokeo [https://www.spokeo.com/optout ](https://www.spokeo.com/optout) 
+  `support@spokeo.com, customercare@spokeo.com`
+2. Radaris [https://radaris.com/control/privacy ](https://radaris.com/control/privacy)
+   `support@radaris.com; info@radaris.com`
+3. Whitepages  [http://www.whitepages.com/suppression_requests ](http://www.whitepages.com/suppression_requests)
+  `support@whitepages.com`
+4. Mylife  - [https://www.mylife.com/ccpa/index.pubview](https://www.mylife.com/ccpa/index.pubview)
+   `privacy@mylife.com`
+4. Intelius [https://www.intelius.com/opt-out/submit/](https://www.intelius.com/opt-out/submit/)
+5. BeenVerified [https://www.beenverified.com/faq/opt-out/](https://www.beenverified.com/faq/opt-out/)
+6. Acxiom [https://isapps.acxiom.com/optout/optout.aspx](https://isapps.acxiom.com/optout/optout.aspx)
+7. Infotracer [https://infotracer.com/optout/](https://infotracer.com/optout/)
+8. Lexis Nexis [https://optout.lexisnexis.com/ ](https://optout.lexisnexis.com/)and [https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx](https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx)
+9. TruePeopleSearch [https://www.truepeoplesearch.com/removal](https://www.truepeoplesearch.com/removal)
 10. [TruthFinder.com](TruthFinder.com)
-11. RocketReach: [https://wiki.onerep.com/post/rocketreach.co](https://wiki.onerep.com/post/rocketreach.co)
+11. RocketReach [https://wiki.onerep.com/post/rocketreach.co](https://wiki.onerep.com/post/rocketreach.co)
 12. [https://propeoplesearch.com/optout](https://propeoplesearch.com/optout)
 13. [https://privateeye.com/static/process_optout](https://privateeye.com/static/process_optout)
 14. [https://golookup.com/support/optout](https://golookup.com/support/optout)
@@ -90,7 +106,7 @@ The mega lists:
 
 Larger offenders:
 1. [411locate.com](411locate.com)
-2. [advanced-people-search.com](advanced-people-search.com)t
+2. [advanced-people-search.com](advanced-people-search.com)
 3. [advancedbackgroundchecks.com](advancedbackgroundchecks.com)
 4. [cyberbackgroundchecks.com](cyberbackgroundchecks.com)
 5. [familytreenow.com](familytreenow.com)
