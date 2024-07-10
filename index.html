@@ -1,22 +1,64 @@
 <body>
-  <div class="centered">
-  <h2>Christopher W Moriarty</h2>
-  <a href="https://www.linkedin.com/in/cwmoriarty/">linkedin</a><br>
-  <a href="Chris%20Moriarty%20-%20Resume.pdf">resume</a><br>
-  <a href="https://github.com/cwmoriarty">github</a><br>
-  cwm@cwmoriarty.com
-  </div>
+<div class="centered">
+<h2>Christopher W Moriarty</h2>
+
+<body>
+<div class="centered">
+<h2>Christopher W Moriarty</h2>
+ <a href="Chris%20Moriarty%20-%20Resume.pdf">resume</a><br>
+ <a href="https://github.com/cwmoriarty">github</a><br>
+ <a href="https://www.linkedin.com/in/cwmoriarty/">linkedin</a><br>
+ <br>
+ email: <tt>cwmⓐcwmoriarty.com</tt>
+</div>
+
+<div class="libleft">
+<small>🌎 <span id="distance">0</span> miles away</small>
+</div>
 </body>
 
 
+
+<script type="text/javascript">
+R = 3959 // Radius of Earth in miles
+fetch('https://ipapi.co/json').then(response => response.json()).then(data => {
+dLat = (atob("NDIuNTU=") - data.latitude) * Math.PI / 180 // Radians keep me safe.
+dLon = (atob("LTcwLjg3") - data.longitude) * Math.PI / 180
+  
+a = 
+Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+Math.cos(data.latitude * Math.PI / 180) * Math.cos(42.55 * Math.PI / 180) *
+Math.sin(dLon / 2) * Math.sin(dLon / 2);
+ c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+distance = (R * c).toFixed(1); // Distance in miles
+
+//distance=42;
+console.log(data.latitude);
+document.getElementById("distance").innerHTML = distance;
+})
+.catch(error => {
+console.error("Error fetching IP data:", error);
+});
+</script>
+
+
+
+//Style
 <style type="text/css">
 body { font-family: Helvetica, Geneva, sans-serif; }
 a { color: black; }
 .centered { 
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-top: -125px;
-  margin-left: -87px;
+position: fixed;
+top: 50%;
+left: 50%;
+margin-top: -125px;
+margin-left: -87px;
+} 
+.libleft {
+position: fixed;
+left:30;
+bottom:0;
 }
 </style>
+
+
