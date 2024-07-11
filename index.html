@@ -1,15 +1,24 @@
+
 <body>
   <div class="centered">
-  <h2>Christopher W Moriarty</h2>
+  <h1>Christopher W Moriarty</h1>
   <a href="Chris%20Moriarty%20-%20Resume.pdf">resume</a><br>
   <a href="https://github.com/cwmoriarty">github</a><br>
   <a href="https://www.linkedin.com/in/cwmoriarty/">linkedin</a><br>
   <br>
-  <tt>cwmⓐcwmoriarty.com</tt>
-  </div>    
+  <br>
+  projects:<br>
+  <a href="https://sunblock.app">sunblock.app</a><br><br>
+  <br>
+  <tt>cwmⓐcwmoriarty.com</tt><br><br>
 
-  <div class="libleft"><small><span id="flag">🌎</span> <span id="distance">0</span> miles away</small>
+
+ </div>    
+
+  <div class="libleft">
+    <small><span id="flag">🌎</span> <span id="distance">0</span> miles away</small>
   </div>
+
 </body>
 
 
@@ -40,7 +49,7 @@
     console.log(flagEmoji)
     })
       .catch(error => {
-        console.error("Error fetching IP API data:", error);
+        console.error("Error fetching IP data:", error);
       });
   </script>
 
@@ -50,17 +59,37 @@
 <style type="text/css">
     body { font-family: Helvetica, Geneva, sans-serif; }
     a { color: black; }
-    .centered { 
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      margin-top: -125px;
-      margin-left: -87px;
-    } .libleft {
+
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 50%;
+  font-size: calc(1vw + 1vh);
+  /*border: 1px solid black*/;
+}
+.centered h1
+{ 
+  font-size: calc(2vw + 2vh);
+}
+
+
+@media (max-width: 768px) {
+  .centered {
+    width: 50%;
+    height: 50%;
+    font-size: calc(2vw + 2vh);
+  }
+}
+
+.libleft {
           position: fixed;
-          left:30;
-          bottom:0;
+          left:10; 
+          bottom:10;
         }
-    </style>
+        </style>
 
 
