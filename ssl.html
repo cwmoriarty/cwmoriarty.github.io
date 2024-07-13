@@ -14,87 +14,91 @@
     </div>
 </body>
 <script>
-// Function to fetch and parse SSL certificate metadata
+<script>
 async function getSSLCertMetadata(url) {
   try {
     const response = await fetch(url);
     if (!response.ok) {
       throw new Error('Failed to fetch the URL.');
     }
-    
-    const certChain = await response.arrayBuffer(); // Get the response as an ArrayBuffer
-    const cert = parseCertificate(certChain); // Parse the certificate
-    displayCertInfo(cert); // Display certificate information
+
+    const cert = await response.arrayBuffer();
+    const certInfo = parseCertificate(cert);
+    displayCertInfo(certInfo);
   } catch (error) {
     document.getElementById('sslCertInfo').innerText = error.message;
   }
 }
 
-// Function to parse X.509 certificate
 function parseCertificate(buffer) {
-  const certInfo = {};
+  const byteArray = new Uint8Array(buffer);
+  const cert = parseASN1(byteArray);
 
-  // Extract validity period
-  const asn1 = ASN1.decode(buffer);
-  const tbsCertificate = asn1.sub[0];
-  const validity = tbsCertificate.sub[4];
-  const notBefore = validity.sub[0].content();
-  const notAfter = validity.sub[1].content();
+  const tbsCertificate = cert.sub[0];
+  const issuer = getName(tbsCertificate.sub[3]);
+  const subject = getName(tbsCertificate.sub[5]);
+  const validFrom = tbsCertificate.sub[4].sub[0].content();
+  const validTo = tbsCertificate.sub[4].sub[1].content();
+  const sanExtension = tbsCertificate.sub.find(sub => sub.tag.tagNumber === 3 && sub.sub[0].content() === '2.5.29.17');
+  const sans = sanExtension ? parseSAN(sanExtension.sub[1]) : [];
 
-  certInfo.notBefore = new Date(notBefore);
-  certInfo.notAfter = new Date(notAfter);
+  return {
+    issuer,
+    subject,
+    validFrom,
+    validTo,
+    sans
+  };
+}
 
-  // Extract issuer and subject
-  const issuer = tbsCertificate.sub[3];
-  const subject = tbsCertificate.sub[5];
+function getName(rdn) {
+  return rdn.sub.map(set => set.sub[0].content()).join(', ');
+}
 
-  certInfo.issuer = parseName(issuer);
-  certInfo.subject = parseName(subject);
+function parseSAN(san) {
+  return san.sub.map(item => item.content()).join(', ');
+}
 
-  // Extract SANs
-  const extensions = tbsCertificate.sub[7];
-  const sanExt = extensions.sub.find(ext => ext.sub[0].content() === '2.5.29.17');
-  if (sanExt) {
-    certInfo.sans = parseSAN(sanExt.sub[1]);
+function parseASN1(byteArray) {
+  let offset = 0;
+  function readLength() {
+    let length = byteArray[offset++];
+    if (length & 0x80) {
+      const nBytes = length & 0x7F;
+      length = 0;
+      for (let i = 0; i < nBytes; i++) {
+        length = (length << 8) | byteArray[offset++];
+      }
+    }
+    return length;
   }
 
-  return certInfo;
+  function readASN1() {
+    const tag = byteArray[offset++];
+    const length = readLength();
+    const end = offset + length;
+    const sub = [];
+
+    while (offset < end) {
+      sub.push(readASN1());
+    }
+
+    return { tag, length, sub, content: () => String.fromCharCode.apply(null, byteArray.slice(offset - length, offset)) };
+  }
+
+  return readASN1();
 }
 
-// Function to parse name (issuer or subject)
-function parseName(name) {
-  return name.sub.map(rdn => {
-    const type = rdn.sub[0].sub[0].content();
-    const value = rdn.sub[0].sub[1].content();
-    return `${type}=${value}`;
-  }).join(', ');
-}
-
-// Function to parse SAN extension
-function parseSAN(extension) {
-  return extension.sub.map(san => san.content()).join(', ');
-}
-
-// Function to display SSL certificate information
 function displayCertInfo(cert) {
   const metadataInfo = `
     <strong>Issuer:</strong> ${cert.issuer}<br>
     <strong>Subject:</strong> ${cert.subject}<br>
-    <strong>Valid From:</strong> ${cert.notBefore}<br>
-    <strong>Valid To:</strong> ${cert.notAfter}<br>
-    <strong>Subject Alternative Names (SANs):</strong> ${cert.sans || 'N/A'}
+    <strong>Valid From:</strong> ${cert.validFrom}<br>
+    <strong>Valid To:</strong> ${cert.validTo}<br>
+    <strong>Subject Alternative Names (SANs):</strong> ${cert.sans.join(', ')}
   `;
   document.getElementById('sslCertInfo').innerHTML = metadataInfo;
 }
-
-// ASN.1 decoder (simplified version)
-const ASN1 = {
-  decode: function(buffer) {
-    // Simplified ASN.1 decoder for demonstration purposes
-    // (replace with a real ASN.1 decoder for production use)
-    return { sub: [] };
-  }
-};
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('checkSSLButton').addEventListener('click', () => {
