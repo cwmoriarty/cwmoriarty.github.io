@@ -1,0 +1,163 @@
+
+<body>
+    <div class="centered">
+    <h1>SSL Metadata Viewer - TEST</h1>
+    <br>
+    <label for="urlInput">URL:</label>
+    <input type="text" id="urlInput" placeholder="https://nopessl.org" style="width: 300px;">
+    <button onclick="getSSLCertMetadata(document.getElementById('urlInput').value)">GO</button>
+    <br><Br>
+    <div id="sslCertInfo" class="output">metadataInfo</div>
+</div>    
+
+<div class="libleft">
+  NopeSSL.org
+</div>
+</body>
+    
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/asn1js/5.5.0/asn1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pkijs/2.3.0/pkijs.js"></script>
+    <script>
+        function getSSLCertMetadata(url) {
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch the URL.');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    return blobToBase64(blob);
+                })
+                .then(base64 => {
+                    var pem = base64ToPem(base64); // Convert base64 to PEM format
+                    var cert = parseCertificate(pem); // Parse certificate details
+                    displayCertInfo(cert); // Display certificate information
+                })
+                .catch(error => {
+                    document.getElementById('sslCertInfo').innerText = error.message;
+                });
+        }
+
+        function parseCertificate(pem) {
+            var lines = pem.split('\n');
+            var certBody = '';
+            var isInCertBody = false;
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (line.startsWith('-----BEGIN CERTIFICATE-----')) {
+                    isInCertBody = true;
+                } else if (line.startsWith('-----END CERTIFICATE-----')) {
+                    break;
+                } else if (isInCertBody) {
+                    certBody += line;
+                }
+            }
+            var decodedCert = window.atob(certBody);
+            var asn1 = window.asn1js.fromBER(window.arrayBufferFrom(decodedCert, 0, decodedCert.length).buffer);
+            var certificate = new window.PKIjs.Certificate({ schema: asn1.result });
+
+            // Extract relevant certificate details
+            var subject = certificate.subject.typesAndValues.map(item => `${item.type}=${item.value.value}`).join(', ');
+            var issuer = certificate.issuer.typesAndValues.map(item => `${item.type}=${item.value.value}`).join(', ');
+            var validFrom = certificate.notBefore.value.toLocaleString();
+            var validTo = certificate.notAfter.value.toLocaleString();
+            var sanExtensions = certificate.extensions.filter(ext => ext.extnID === '2.5.29.17')[0];
+            var sans = sanExtensions ? sanExtensions.parsedValue.map(san => san.value) : [];
+
+            return {
+                subject: subject,
+                issuer: issuer,
+                validFrom: validFrom,
+                validTo: validTo,
+                sans: sans
+            };
+        }
+
+
+        function displayCertInfo(cert) {
+            metadataInfo = `
+    <strong>Subject:</strong> ${cert.subject}<br>
+    <strong>Issuer:</strong> ${cert.issuer}<br>
+    <strong>Valid From:</strong> ${cert.validFrom}<br>
+    <strong>Valid To:</strong> ${cert.validTo}<br>
+    <strong>Subject Alternative Names (SANs):</strong> ${cert.sans.join(', ')}
+  `;
+            document.getElementById('sslCertInfo').innerHTML = metadataInfo;
+        }
+
+        function blobToBase64(blob) {
+            return new Promise((resolve, reject) => {
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = function (error) {
+                    reject(error);
+                };
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        function base64ToPem(base64) {
+            var pem = '-----BEGIN CERTIFICATE-----\n';
+            pem += base64.match(/.{1,64}/g).join('\n');
+            pem += '\n-----END CERTIFICATE-----\n';
+            return pem;
+        }
+
+    </script>
+
+
+
+
+<style type="text/css">
+    body {
+        font-family: Helvetica, Geneva, sans-serif;
+    }
+
+    a {
+        color: black;
+    }
+
+    .output{
+        font-family: monospace;
+        color: lime;
+        background-color: black;
+        border: 10px solid;
+        border-color: black;
+    }
+
+    .centered {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        height: 50%;
+        font-size: calc(1vw + 1vh);
+    }
+
+    .centered h1 {
+        font-size: calc(2vw + 2vh);
+    }
+
+    @media (max-width: 768px) {
+        .centered {
+            width: 50%;
+            height: 50%;
+            font-size: calc(2vw + 2vh);
+        }
+    }
+
+    .libleft {
+        position: fixed;
+        left: 10;
+        bottom: 10;
+    }
+</style>
+
+</html>
