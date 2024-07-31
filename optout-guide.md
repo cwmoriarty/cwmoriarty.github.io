@@ -1,4 +1,4 @@
-# cwmoriarty's Guide to Opting Out
+# 📭 cwmoriarty's Guide to Opting Out
 
 
 In this guide I outline the most impactful actions you can take toward privacy and reducing physical junk mail. We only get one life, and one planet. After a few weeks of getting zero junk mail or calls, and being at a significantly better posture for identity theft, these steps are worth it. Not a lot of this can be automated, unfortunately. Feel free to use a burner email address, and assume these parties are operating unethically.
