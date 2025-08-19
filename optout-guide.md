@@ -45,7 +45,7 @@ Keep all of your junk mail in a pile for 1 month. Reach out to each one of the s
 
 > Note: Anything mailed **PRESORTED** cannot be rejected, otherwise just write **REFUSED** on the unopened mail and leave it for the postal worker to take back.
 
-- Search [https://www.catalogchoice.org/accounts/2474926/catalog_choices  ](https://www.catalogchoice.org/accounts/2474926/catalog_choices)
+- Search [https://www.catalogchoice.org/](https://www.catalogchoice.org/)
 - Search [https://simpleoptout.com/](https://simpleoptout.com/)
 - Use USPS’s Informed Delivery to get daily emails with scanned copies of your incoming mail. I use this instead of the physical artifact to save time [https://www.usps.com/manage/informed-delivery.htm](https://www.usps.com/manage/informed-delivery.htm)
 
