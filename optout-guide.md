@@ -74,16 +74,47 @@ Freezing your credit prevents anyone from opening new lines of credit in your na
 
 ---
 
-## Phase 4: Data Broker Aggregators
+## Phase 4: Data Brokers & Aggregators
 
-- [ ] **[PeopleConnect Suppression Center](https://suppression.peopleconnect.us/)**  
-  Suppresses your record across TruthFinder, Intelius, Instant Checkmate, and US Search in a single request.
-- [ ] **[LexisNexis Consumer Portal](https://consumer.risk.lexisnexis.com/opt)**  
-  Opt out of public records sharing. Also submit the [LexisNexis Direct Marketing Opt-Out](https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx).
-- [ ] **[Acxiom Privacy & Opt-Out](https://isapps.acxiom.com/optout/optout.aspx)**  
-  Suppresses marketing profiles across Acxiom's network.
-- [ ] **[BeenVerified Opt-Out](https://www.beenverified.com/app/optout/search)**  
-  Removes records from BeenVerified, NeighborWho, Ownerly, and PeopleSmart.
+- [ ] [PeopleConnect (TruthFinder, Intelius, Instant Checkmate, US Search)](https://suppression.peopleconnect.us/)
+- [ ] [LexisNexis Consumer Portal](https://consumer.risk.lexisnexis.com/opt)
+- [ ] [LexisNexis Direct Marketing Opt-Out](https://www.lexisnexis.com/privacy/directmarketingopt-out.aspx)
+- [ ] [Acxiom Privacy & Opt-Out](https://isapps.acxiom.com/optout/optout.aspx)
+- [ ] [LiveRamp Opt-Out](https://liveramp.com/opt_out/)
+- [ ] [BeenVerified (BeenVerified, NeighborWho, Ownerly, PeopleSmart)](https://www.beenverified.com/app/optout/search)
+- [ ] [Whitepages Suppression](https://www.whitepages.com/suppression-requests)
+- [ ] [Spokeo](https://www.spokeo.com/optout)
+- [ ] [Radaris](https://radaris.com/control/privacy)
+- [ ] [TruePeopleSearch](https://www.truepeoplesearch.com/removal)
+- [ ] [FastPeopleSearch](https://www.fastpeoplesearch.com/removal)
+- [ ] [Nuwber](https://nuwber.com/removal/link)
+- [ ] [CyberBackgroundChecks](https://www.cyberbackgroundchecks.com/removal)
+- [ ] [FamilyTreeNow](https://www.familytreenow.com/optout)
+- [ ] [SearchPeopleFree](https://www.searchpeoplefree.com/opt-out)
+- [ ] [PeopleFinders](https://www.peoplefinders.com/opt-out)
+- [ ] [USA-People-Search](https://www.usa-people-search.com/manage)
+- [ ] [USPhoneBook](https://www.usphonebook.com/removal)
+- [ ] [FastBackgroundCheck](https://www.fastbackgroundcheck.com/removal)
+- [ ] [AdvancedBackgroundChecks](https://www.advancedbackgroundchecks.com/opt-out)
+- [ ] [MyLife](https://www.mylife.com/ccpa/index.pubview)
+- [ ] [RocketReach](https://rocketreach.co/remove-profile)
+- [ ] [ThatsThem](https://thatsthem.com/optout)
+- [ ] [CheckPeople](https://checkpeople.com/opt-out)
+- [ ] [ClustrMaps](https://clustrmaps.com/bl/opt-out)
+- [ ] [Infotracer](https://infotracer.com/optout/)
+- [ ] [Social Catfish](https://socialcatfish.com/opt-out/)
+- [ ] [PeekYou](https://www.peekyou.com/about/contact/optout/)
+- [ ] [SmartBackgroundChecks](https://www.smartbackgroundchecks.com/optout)
+- [ ] [PeopleSearchNow](https://www.peoplesearchnow.com/opt-out)
+- [ ] [PublicRecordsNow](https://www.publicrecordsnow.com/optout)
+- [ ] [GoLookup](https://golookup.com/support/optout)
+- [ ] [PrivateEye](https://privateeye.com/static/process_optout)
+- [ ] [AddressSearch](https://www.addresssearch.com/remove-info.php)
+- [ ] [411Locate](https://www.411locate.com/)
+- [ ] [FindPeopleSearch](https://www.findpeoplesearch.com/)
+- [ ] [USATrace](https://www.usatrace.com/)
+- [ ] [Advanced People Search](https://www.advanced-people-search.com/)
+- [ ] [QuickPeopleTrace](https://www.quickpeopletrace.com/)
 
 ---
 
