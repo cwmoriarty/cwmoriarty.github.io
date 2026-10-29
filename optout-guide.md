@@ -65,7 +65,7 @@ Freezing your credit prevents anyone from opening new lines of credit in your na
 
 ---
 
-## Phase 3: Recommended Tools
+## Phase 3: Paid Opt-Out Services
 
 - [DeleteMe](https://joindeleteme.com/)
 - [Cloaked](https://www.cloaked.com/)
@@ -115,6 +115,19 @@ Freezing your credit prevents anyone from opening new lines of credit in your na
 - [ ] [USATrace](https://www.usatrace.com/)
 - [ ] [Advanced People Search](https://www.advanced-people-search.com/)
 - [ ] [QuickPeopleTrace](https://www.quickpeopletrace.com/)
+
+---
+
+## California Residents
+
+California residents have unique legal protections under the California Consumer Privacy Act (CCPA) and the California DELETE Act (SB 362):
+
+- [ ] **[California DROP (Delete Request and Opt-out Platform)](https://privacy.ca.gov/drop/)**  
+  The official portal managed by the California Privacy Protection Agency (CPPA) to submit a single deletion request to all registered data brokers in California.
+- [ ] **[California Data Broker Registry](https://cppa.ca.gov/data_broker_registry/)**  
+  The CPPA's searchable registry of all registered data brokers, including direct links to their individual opt-out and deletion pages.
+- [ ] **[Global Privacy Control (GPC)](https://globalprivacycontrol.org/)**  
+  A browser signal (supported natively by Brave, Firefox, and DuckDuckGo, or via extension) that legally requires participating websites not to sell or share your personal data.
 
 ---
 
