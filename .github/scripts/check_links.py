@@ -72,17 +72,30 @@ def check_url(url: str) -> dict:
             last_error = f"HTTP {exc.code}"
         except Exception as exc:
             msg = str(exc)
-            if "UNEXPECTED_EOF_WHILE_READING" in msg or "Connection reset by peer" in msg:
+            if (
+                "UNEXPECTED_EOF_WHILE_READING" in msg
+                or "TLS/SSL connection has been closed" in msg
+                or "Connection reset by peer" in msg
+            ):
                 return {
                     "url": url,
                     "status": "BOT_BLOCKED",
                     "detail": f"TLS/connection reset ({msg})",
                 }
-            last_error = msg
+            if "timed out" in msg.lower():
+                last_error = f"TIMEOUT:{msg}"
+            else:
+                last_error = msg
 
         if attempt == 0:
             time.sleep(1.5)
 
+    if last_error.startswith("TIMEOUT:"):
+        return {
+            "url": url,
+            "status": "TIMEOUT",
+            "detail": last_error.removeprefix("TIMEOUT:"),
+        }
     return {"url": url, "status": "BROKEN", "detail": last_error}
 
 
@@ -107,6 +120,7 @@ def write_step_summary(results: list[dict]) -> None:
     broken = [r for r in results if r["status"] == "BROKEN"]
     redirects = [r for r in results if r["status"] == "REDIRECT"]
     blocked = [r for r in results if r["status"] == "BOT_BLOCKED"]
+    timeouts = [r for r in results if r["status"] == "TIMEOUT"]
     ok = [r for r in results if r["status"] == "OK"]
 
     lines = [
@@ -114,13 +128,19 @@ def write_step_summary(results: list[dict]) -> None:
         f"- **Checked:** {len(results)}",
         f"- **OK:** {len(ok)}",
         f"- **Permanent Redirects:** {len(redirects)}",
-        f"- **Bot-Blocked (403/429/503):** {len(blocked)}",
+        f"- **Bot-Blocked (403/429/503/TLS reset):** {len(blocked)}",
+        f"- **Timed Out:** {len(timeouts)}",
         f"- **Broken:** {len(broken)}",
         "",
     ]
     if broken:
         lines.append("### Broken Links")
         for item in broken:
+            lines.append(f"- `{item['url']}` — {item['detail']}")
+        lines.append("")
+    if timeouts:
+        lines.append("### Timed Out")
+        for item in timeouts:
             lines.append(f"- `{item['url']}` — {item['detail']}")
         lines.append("")
     if redirects:
