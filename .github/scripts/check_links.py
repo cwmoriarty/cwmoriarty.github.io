@@ -40,6 +40,8 @@ class PermanentRedirectTracker(urllib.request.HTTPRedirectHandler):
 def check_url(url: str) -> dict:
     """Check a single URL with retries and classify its status."""
     ctx = ssl.create_default_context()
+    if hasattr(ssl, "OP_IGNORE_UNEXPECTED_EOF"):
+        ctx.options |= ssl.OP_IGNORE_UNEXPECTED_EOF
     last_error = ""
 
     for attempt in range(2):
@@ -69,7 +71,14 @@ def check_url(url: str) -> dict:
                 return {"url": url, "status": "BROKEN", "detail": f"HTTP {exc.code}"}
             last_error = f"HTTP {exc.code}"
         except Exception as exc:
-            last_error = str(exc)
+            msg = str(exc)
+            if "UNEXPECTED_EOF_WHILE_READING" in msg or "Connection reset by peer" in msg:
+                return {
+                    "url": url,
+                    "status": "BOT_BLOCKED",
+                    "detail": f"TLS/connection reset ({msg})",
+                }
+            last_error = msg
 
         if attempt == 0:
             time.sleep(1.5)
