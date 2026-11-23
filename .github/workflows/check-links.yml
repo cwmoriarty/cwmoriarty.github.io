@@ -1,0 +1,36 @@
+name: Check Opt-Out Links
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "optout-guide.md"
+      - ".github/scripts/check_links.py"
+      - ".github/workflows/check-links.yml"
+  pull_request:
+    paths:
+      - "optout-guide.md"
+      - ".github/scripts/check_links.py"
+      - ".github/workflows/check-links.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run link checker
+        run: python3 .github/scripts/check_links.py
