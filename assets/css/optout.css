@@ -639,13 +639,12 @@ h1 {
   display: flex;
   gap: 12px;
   align-items: baseline;
-  max-inline-size: 66ch;
   padding: 12px 16px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   background-color: var(--card);
   border: 1px solid var(--border);
   border-inline-start: 3px solid var(--accent);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.875rem;
   color: var(--text-secondary);
   line-height: 1.5;
@@ -1045,9 +1044,7 @@ body.hide-completed .check-row.is-done {
 }
 
 .item-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline;
   color: var(--text);
   text-decoration: none;
   font-weight: 500;
@@ -1067,9 +1064,19 @@ body.hide-completed .check-row.is-done {
 }
 
 .ext-icon {
+  display: inline-block;
+  vertical-align: -0.14em;
+  margin-inline-start: 4px;
   color: var(--text-muted);
   flex-shrink: 0;
   transition: color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+}
+
+.service-link .ext-icon,
+.ref-link .ext-icon,
+.tool-link .ext-icon {
+  margin-inline-start: 0;
+  vertical-align: middle;
 }
 
 .item-link:hover .ext-icon,
