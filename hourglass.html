@@ -1,120 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Countdown Timer</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f0f0f0;
-        }
-        #tasktimer {
-            font-size: 48px;
-            margin: 4x;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 10px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>HourGlass — Task Pacing Timer</title>
+  <style>
+    :root {
+      --bg-light: #f7f4ee;
+      --card-light: #fdfbf7;
+      --raised-light: #f2ede3;
+      --border-light: rgba(31, 27, 22, 0.12);
+      --text-light: #1f1b16;
+      --muted-light: #6b6358;
+      --accent-light: #146c5c;
+      --accent-ink-light: #ffffff;
+
+      --bg-dark: #141415;
+      --card-dark: #19191b;
+      --raised-dark: #232325;
+      --border-dark: rgba(237, 237, 237, 0.12);
+      --text-dark: #ededed;
+      --muted-dark: #8c8c93;
+      --accent-dark: #4cc38a;
+      --accent-ink-dark: #0d1f17;
+
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --raised: var(--raised-light);
+      --border: var(--border-light);
+      --text: var(--text-light);
+      --muted: var(--muted-light);
+      --accent: var(--accent-light);
+      --accent-ink: var(--accent-ink-light);
+
+      color-scheme: light dark;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--bg-dark);
+        --card: var(--card-dark);
+        --raised: var(--raised-dark);
+        --border: var(--border-dark);
+        --text: var(--text-dark);
+        --muted: var(--muted-dark);
+        --accent: var(--accent-dark);
+        --accent-ink: var(--accent-ink-dark);
+      }
+    }
+
+    @supports (color: light-dark(white, black)) {
+      :root {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --card: light-dark(var(--card-light), var(--card-dark));
+        --raised: light-dark(var(--raised-light), var(--raised-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --text: light-dark(var(--text-light), var(--text-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --accent: light-dark(var(--accent-light), var(--accent-dark));
+        --accent-ink: light-dark(var(--accent-ink-light), var(--accent-ink-dark));
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-block-size: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    main {
+      inline-size: min(440px, 100%);
+      padding: 28px 24px;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.375rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    .readout {
+      padding: 20px;
+      background-color: var(--raised);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .readout-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    #tasktimer {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: clamp(2.5rem, 2rem + 2vw, 3.25rem);
+      font-weight: 500;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    #timer {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.8125rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    input[type="number"] {
+      inline-size: 100%;
+      min-block-size: 40px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--raised);
+      color: var(--text);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.9375rem;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      flex: 1;
+      min-block-size: 40px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--raised);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    button.primary {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      color: var(--accent-ink);
+    }
+
+    :where(button, input):focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
 </head>
 <body>
-    <h1 id="title">HourGlass Alpha ⏳😎</h1>
-    <p>Minutes: <input type="number" id="minutesInput" placeholder="Enter minutes" min="1">
-    </p>
+  <main>
+    <header>
+      <h1 id="title">HourGlass</h1>
+      <p class="subtitle">Divide remaining session time evenly across remaining tasks.</p>
+    </header>
 
-    <p>Tasks: <input type="number" id="tasksInput" placeholder="Enter tasks" min="0">
-    </p>
+    <div class="readout" aria-live="off">
+      <div>
+        <div class="readout-label">Time per remaining task</div>
+        <div id="tasktimer">10:00</div>
+      </div>
+      <div class="total-row">
+        <span>Total time remaining</span>
+        <span id="timer">30:00</span>
+      </div>
+    </div>
 
-        <!--<div id="taskInputs">
-            <input type="text" class="task-input1" placeholder="Enter task #1"> 
-            <input type="text" class="task-input2" placeholder="Enter task #2">
-            <input type="text" class="task-input3" placeholder="Enter task #3"> 
-        </div>
-        -->
+    <div class="inputs">
+      <label for="minutesInput">
+        Minutes
+        <input type="number" id="minutesInput" value="30" min="1" max="1440">
+      </label>
+      <label for="tasksInput">
+        Tasks remaining
+        <input type="number" id="tasksInput" value="3" min="0" max="999">
+      </label>
+    </div>
 
-        <p>
-        <button onclick="addTask()">Add  Task</button>
-        <button onclick="completeTask()">Complete Task</button>
-    </p>
-    <p></p>
-    Actual time remaining:
-    <div id="timer">00:00</div>
-</p>
+    <div class="controls">
+      <button type="button" id="addTaskBtn">Add task</button>
+      <button type="button" id="completeTaskBtn">Complete task</button>
+    </div>
 
+    <div class="controls">
+      <button type="button" id="startBtn" class="primary">Start</button>
+      <button type="button" id="resetBtn">Reset</button>
+    </div>
+  </main>
 
-    <p>
-        Time for each task:<div id="tasktimer">00:00</div></p>
-    
-    <button id="start" onclick="toggleTimer()">Start</button>
+  <script>
+    (function () {
+      "use strict";
 
-    <script>
-        let timerInterval;
-        let timeRemaining;
-        let isPaused = true;
-        let countTasks=3;
+      var minutesEl = document.getElementById("minutesInput");
+      var tasksEl = document.getElementById("tasksInput");
+      var timerEl = document.getElementById("timer");
+      var taskTimerEl = document.getElementById("tasktimer");
+      var titleEl = document.getElementById("title");
+      var startBtn = document.getElementById("startBtn");
+      var resetBtn = document.getElementById("resetBtn");
+      var addTaskBtn = document.getElementById("addTaskBtn");
+      var completeTaskBtn = document.getElementById("completeTaskBtn");
 
-        function toggleTimer() {
-            const minutesInput = document.getElementById('minutesInput').value;
-            if (isPaused) {
-                if (!timerInterval) {
-                    timeRemaining = parseInt(minutesInput) * 60;
-                }
-                timerInterval = setInterval(updateTimer, 1000);
-                isPaused = false;
-                document.getElementById('start').textContent = 'Pause'
-            } else {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                isPaused = true;
-                document.getElementById('start').textContent = 'Start'
-            }
+      var timerInterval = null;
+      var timeRemaining = 30 * 60;
+      var hasStarted = false;
+      var countTasks = 3;
+
+      function formatClock(totalSeconds) {
+        var safe = Math.max(0, Math.floor(totalSeconds));
+        var mins = Math.floor(safe / 60);
+        var secs = safe % 60;
+        return mins + ":" + String(secs).padStart(2, "0");
+      }
+
+      function render() {
+        timerEl.textContent = formatClock(timeRemaining);
+        if (countTasks <= 0) {
+          taskTimerEl.textContent = "Done";
+        } else {
+          taskTimerEl.textContent = formatClock(timeRemaining / countTasks);
         }
+        tasksEl.value = String(countTasks);
+      }
 
-
-        function addTask() {
-            countTasks++;
-            document.getElementById('tasksInput').value = countTasks;
-            /*const newInput = document.createElement('input');
-            newInput.type = 'text';
-            newInput.className = 'task-input'+countTasks;
-            newInput.placeholder = 'Enter task #'+countTasks; */
-
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
         }
+        startBtn.textContent = "Start";
+      }
 
-
-        function completeTask() {
-            countTasks-=1;
-            document.getElementById('tasksInput').value = countTasks;   
+      function tick() {
+        if (timeRemaining <= 0) {
+          stopTimer();
+          titleEl.textContent = "HourGlass — Time up";
+          render();
+          return;
         }
+        timeRemaining -= 1;
+        render();
+      }
 
-        function updateTimer() {
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('title').textContent = 'HourGlass Alpha ⏳😵'
-                return;
-            }
+      startBtn.addEventListener("click", function () {
+        if (timerInterval) {
+          stopTimer();
+          return;
+        }
+        if (!hasStarted || timeRemaining <= 0) {
+          var mins = parseInt(minutesEl.value, 10);
+          timeRemaining = (Number.isFinite(mins) && mins > 0 ? mins : 1) * 60;
+          hasStarted = true;
+        }
+        titleEl.textContent = "HourGlass";
+        timerInterval = setInterval(tick, 1000);
+        startBtn.textContent = "Pause";
+        render();
+      });
 
-            timeRemaining--;
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
+      resetBtn.addEventListener("click", function () {
+        stopTimer();
+        hasStarted = false;
+        var mins = parseInt(minutesEl.value, 10);
+        timeRemaining = (Number.isFinite(mins) && mins > 0 ? mins : 30) * 60;
+        titleEl.textContent = "HourGlass";
+        render();
+      });
 
-            taskTimeRemaining=Math.floor(timeRemaining/countTasks);
-            const taskminutes = Math.floor(taskTimeRemaining / 60);
-            const taskseconds = Math.floor(taskTimeRemaining % 60);
+      addTaskBtn.addEventListener("click", function () {
+        countTasks += 1;
+        render();
+      });
 
+      completeTaskBtn.addEventListener("click", function () {
+        countTasks = Math.max(0, countTasks - 1);
+        render();
+      });
 
-            document.getElementById('timer').textContent = 
-                `${minutes.toString()}:${seconds.toString().padStart(2, '0')}`;
+      tasksEl.addEventListener("input", function () {
+        var val = parseInt(tasksEl.value, 10);
+        countTasks = Number.isFinite(val) && val >= 0 ? val : 0;
+        render();
+      });
 
+      minutesEl.addEventListener("change", function () {
+        if (!hasStarted) {
+          var mins = parseInt(minutesEl.value, 10);
+          timeRemaining = (Number.isFinite(mins) && mins > 0 ? mins : 1) * 60;
+          render();
+        }
+      });
 
-            document.getElementById('tasktimer').textContent = 
-                `${taskminutes.toString()}:${taskseconds.toString().padStart(2, '0')}`; 
-        }a
-    </script>
+      render();
+    })();
+  </script>
 </body>
 </html>

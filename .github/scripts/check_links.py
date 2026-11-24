@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check external links in optout-guide.md and report dead/redirected URLs."""
+"""Check external links in _data/optout.yml and optout-guide.md."""
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
@@ -11,7 +11,11 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-GUIDE_PATH = Path(__file__).resolve().parents[2] / "optout-guide.md"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SOURCE_FILES = [
+    REPO_ROOT / "_data" / "optout.yml",
+    REPO_ROOT / "optout-guide.md",
+]
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
@@ -23,6 +27,18 @@ HEADERS = {
 }
 BOT_BLOCK_CODES = {403, 406, 429, 503}
 DEAD_CODES = {404, 410}
+URL_PATTERN = re.compile(r"https?://[^\s\"'<>)\]]+")
+
+
+def build_ssl_context() -> ssl.SSLContext:
+    """Create a single shared SSL context for all worker threads."""
+    ctx = ssl.create_default_context()
+    if hasattr(ssl, "OP_IGNORE_UNEXPECTED_EOF"):
+        ctx.options |= ssl.OP_IGNORE_UNEXPECTED_EOF
+    return ctx
+
+
+SHARED_SSL_CONTEXT = build_ssl_context()
 
 
 class PermanentRedirectTracker(urllib.request.HTTPRedirectHandler):
@@ -39,21 +55,21 @@ class PermanentRedirectTracker(urllib.request.HTTPRedirectHandler):
 
 def check_url(url: str) -> dict:
     """Check a single URL with retries and classify its status."""
-    ctx = ssl.create_default_context()
-    if hasattr(ssl, "OP_IGNORE_UNEXPECTED_EOF"):
-        ctx.options |= ssl.OP_IGNORE_UNEXPECTED_EOF
     last_error = ""
 
     for attempt in range(2):
         tracker = PermanentRedirectTracker()
         opener = urllib.request.build_opener(
-            urllib.request.HTTPSHandler(context=ctx), tracker
+            urllib.request.HTTPSHandler(context=SHARED_SSL_CONTEXT), tracker
         )
         req = urllib.request.Request(url, headers=HEADERS, method="GET")
         try:
             with opener.open(req, timeout=12) as resp:
                 code = resp.getcode()
-                if tracker.permanent_target and tracker.permanent_target.rstrip("/") != url.rstrip("/"):
+                if (
+                    tracker.permanent_target
+                    and tracker.permanent_target.rstrip("/") != url.rstrip("/")
+                ):
                     return {
                         "url": url,
                         "status": "REDIRECT",
@@ -99,20 +115,24 @@ def check_url(url: str) -> dict:
     return {"url": url, "status": "BROKEN", "detail": last_error}
 
 
-def extract_urls(markdown_text: str) -> list[str]:
-    """Extract unique external http(s) URLs from markdown links."""
-    raw = re.findall(r"\[[^\]]+\]\((https?://[^)\s]+)\)", markdown_text)
+def extract_urls(files: list[Path]) -> list[str]:
+    """Extract unique external http(s) URLs from YAML and Markdown sources."""
     seen: set[str] = set()
     urls: list[str] = []
-    for url in raw:
-        if url not in seen:
-            seen.add(url)
-            urls.append(url)
+    for path in files:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8")
+        for match in URL_PATTERN.findall(text):
+            cleaned = match.rstrip(".,;:")
+            if cleaned not in seen:
+                seen.add(cleaned)
+                urls.append(cleaned)
     return urls
 
 
 def write_step_summary(results: list[dict]) -> None:
-    """Write a markdown summary when running inside GitHub Actions."""
+    """Append a markdown summary when running inside GitHub Actions."""
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if not summary_path:
         return
@@ -148,17 +168,22 @@ def write_step_summary(results: list[dict]) -> None:
         for item in redirects:
             lines.append(f"- `{item['url']}` — {item['detail']}")
         lines.append("")
+    if blocked:
+        lines.append("<details><summary>Bot-Blocked URLs (manual spot-check)</summary>\n")
+        for item in blocked:
+            lines.append(f"- `{item['url']}` — {item['detail']}")
+        lines.append("\n</details>\n")
 
-    Path(summary_path).write_text("\n".join(lines), encoding="utf-8")
+    with open(summary_path, "a", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
 
 
 def main() -> int:
-    text = GUIDE_PATH.read_text(encoding="utf-8")
-    urls = extract_urls(text)
-    print(f"Checking {len(urls)} unique external URLs in {GUIDE_PATH.name}...")
+    urls = extract_urls(SOURCE_FILES)
+    print(f"Checking {len(urls)} unique external URLs...")
 
     results: list[dict] = []
-    with ThreadPoolExecutor(max_workers=10) as pool:
+    with ThreadPoolExecutor(max_workers=8) as pool:
         future_map = {pool.submit(check_url, u): u for u in urls}
         for future in as_completed(future_map):
             results.append(future.result())

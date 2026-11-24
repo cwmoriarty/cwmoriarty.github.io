@@ -1,163 +1,304 @@
-<body>
-    <div class="centered">
-        <h1>SSL Metadata Viewer - TEST</h1>
-        <br>
-        <label for="urlInput">URL:</label>
-        <input type="text" id="urlInput" placeholder="https://nopessl.org" style="width: 300px;">
-        <button onclick="getSSLCertMetadata(document.getElementById('urlInput').value)">GO</button>
-        <br><Br>
-        <div id="sslCertInfo" class="output">metadataInfo</div>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>X.509 Certificate Inspector</title>
+  <style>
+    :root {
+      --bg-light: #f7f4ee;
+      --card-light: #fdfbf7;
+      --raised-light: #f2ede3;
+      --border-light: rgba(31, 27, 22, 0.12);
+      --text-light: #1f1b16;
+      --muted-light: #6b6358;
+      --accent-light: #146c5c;
+      --accent-ink-light: #ffffff;
+      --danger-light: #b91c1c;
 
-    <div class="libleft">
-        NopeSSL.org
-    </div>
-</body>
-<script>
-async function getSSLCertMetadata(url) {
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Failed to fetch the URL.');
+      --bg-dark: #141415;
+      --card-dark: #19191b;
+      --raised-dark: #232325;
+      --border-dark: rgba(237, 237, 237, 0.12);
+      --text-dark: #ededed;
+      --muted-dark: #8c8c93;
+      --accent-dark: #4cc38a;
+      --accent-ink-dark: #0d1f17;
+      --danger-dark: #f06569;
+
+      --bg: var(--bg-light);
+      --card: var(--card-light);
+      --raised: var(--raised-light);
+      --border: var(--border-light);
+      --text: var(--text-light);
+      --muted: var(--muted-light);
+      --accent: var(--accent-light);
+      --accent-ink: var(--accent-ink-light);
+      --danger: var(--danger-light);
+
+      color-scheme: light dark;
     }
 
-    const cert = await response.arrayBuffer();
-    const certInfo = parseCertificate(cert);
-    displayCertInfo(certInfo);
-  } catch (error) {
-    document.getElementById('sslCertInfo').innerText = error.message;
-  }
-}
-
-function parseCertificate(buffer) {
-  const byteArray = new Uint8Array(buffer);
-  const cert = parseASN1(byteArray);
-
-  const tbsCertificate = cert.sub[0];
-  const issuer = getName(tbsCertificate.sub[3]);
-  const subject = getName(tbsCertificate.sub[5]);
-  const validFrom = tbsCertificate.sub[4].sub[0].content();
-  const validTo = tbsCertificate.sub[4].sub[1].content();
-  const sanExtension = tbsCertificate.sub.find(sub => sub.tag.tagNumber === 3 && sub.sub[0].content() === '2.5.29.17');
-  const sans = sanExtension ? parseSAN(sanExtension.sub[1]) : [];
-
-  return {
-    issuer,
-    subject,
-    validFrom,
-    validTo,
-    sans
-  };
-}
-
-function getName(rdn) {
-  return rdn.sub.map(set => set.sub[0].content()).join(', ');
-}
-
-function parseSAN(san) {
-  return san.sub.map(item => item.content()).join(', ');
-}
-
-function parseASN1(byteArray) {
-  let offset = 0;
-  function readLength() {
-    let length = byteArray[offset++];
-    if (length & 0x80) {
-      const nBytes = length & 0x7F;
-      length = 0;
-      for (let i = 0; i < nBytes; i++) {
-        length = (length << 8) | byteArray[offset++];
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: var(--bg-dark);
+        --card: var(--card-dark);
+        --raised: var(--raised-dark);
+        --border: var(--border-dark);
+        --text: var(--text-dark);
+        --muted: var(--muted-dark);
+        --accent: var(--accent-dark);
+        --accent-ink: var(--accent-ink-dark);
+        --danger: var(--danger-dark);
       }
     }
-    return length;
-  }
 
-  function readASN1() {
-    const tag = byteArray[offset++];
-    const length = readLength();
-    const end = offset + length;
-    const sub = [];
-
-    while (offset < end) {
-      sub.push(readASN1());
+    @supports (color: light-dark(white, black)) {
+      :root {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --card: light-dark(var(--card-light), var(--card-dark));
+        --raised: light-dark(var(--raised-light), var(--raised-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --text: light-dark(var(--text-light), var(--text-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --accent: light-dark(var(--accent-light), var(--accent-dark));
+        --accent-ink: light-dark(var(--accent-ink-light), var(--accent-ink-dark));
+        --danger: light-dark(var(--danger-light), var(--danger-dark));
+      }
     }
 
-    return { tag, length, sub, content: () => String.fromCharCode.apply(null, byteArray.slice(offset - length, offset)) };
-  }
+    *, *::before, *::after { box-sizing: border-box; }
 
-  return readASN1();
-}
-
-function displayCertInfo(cert) {
-  const metadataInfo = `
-    <strong>Issuer:</strong> ${cert.issuer}<br>
-    <strong>Subject:</strong> ${cert.subject}<br>
-    <strong>Valid From:</strong> ${cert.validFrom}<br>
-    <strong>Valid To:</strong> ${cert.validTo}<br>
-    <strong>Subject Alternative Names (SANs):</strong> ${cert.sans.join(', ')}
-  `;
-  document.getElementById('sslCertInfo').innerHTML = metadataInfo;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('checkSSLButton').addEventListener('click', () => {
-    const url = document.getElementById('urlInput').value.trim();
-    if (url) {
-      getSSLCertMetadata(url);
-    } else {
-      alert('Please enter a valid URL.');
-    }
-  });
-});
-</script>
-
-
-
-
-<style type="text/css">
     body {
-        font-family: Helvetica, Geneva, sans-serif;
+      margin: 0;
+      min-block-size: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
     }
 
-    a {
-        color: black;
+    main {
+      inline-size: min(640px, 100%);
+      padding: 28px 24px;
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.375rem;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    textarea {
+      inline-size: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--raised);
+      color: var(--text);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.8125rem;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    button {
+      min-block-size: 38px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--accent);
+      background-color: var(--accent);
+      color: var(--accent-ink);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
     }
 
     .output {
-        font-family: monospace;
-        color: lime;
-        background-color: black;
-        border: 10px solid;
-        border-color: black;
+      margin: 0;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background-color: var(--raised);
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.8125rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
 
-    .centered {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 50%;
-        height: 50%;
-        font-size: calc(1vw + 1vh);
+    .output.is-error {
+      color: var(--danger);
     }
 
-    .centered h1 {
-        font-size: calc(2vw + 2vh);
+    code {
+      font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 0.8125rem;
     }
 
-    @media (max-width: 768px) {
-        .centered {
-            width: 50%;
-            height: 50%;
-            font-size: calc(2vw + 2vh);
+    :where(button, textarea):focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>X.509 Certificate Inspector</h1>
+      <p>Paste a PEM-encoded certificate to parse its ASN.1 fields locally in your browser. Browsers cannot inspect remote TLS handshake certificates via <code>fetch()</code>; export one with <code>openssl s_client -connect example.com:443 -showcerts</code>.</p>
+    </header>
+
+    <div>
+      <label for="pemInput">PEM certificate</label>
+      <textarea id="pemInput" rows="7" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----&#10;...&#10;-----END CERTIFICATE-----"></textarea>
+    </div>
+
+    <div class="actions">
+      <button type="button" id="inspectBtn">Inspect PEM</button>
+    </div>
+
+    <pre id="sslCertInfo" class="output" aria-live="polite">Paste a PEM certificate and click Inspect PEM.</pre>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var pemInput = document.getElementById("pemInput");
+      var inspectBtn = document.getElementById("inspectBtn");
+      var outputEl = document.getElementById("sslCertInfo");
+
+      function decodeBase64(pem) {
+        var clean = pem
+          .replace(/-----BEGIN CERTIFICATE-----/g, "")
+          .replace(/-----END CERTIFICATE-----/g, "")
+          .replace(/\s+/g, "");
+        if (!clean) throw new Error("No PEM data provided.");
+        var binary = atob(clean);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
         }
-    }
+        return bytes;
+      }
 
-    .libleft {
-        position: fixed;
-        left: 10;
-        bottom: 10;
-    }
-</style>
+      function parseASN1(bytes) {
+        var offset = 0;
 
+        function readLength() {
+          if (offset >= bytes.length) throw new Error("Unexpected end of ASN.1 data.");
+          var len = bytes[offset++];
+          if (len & 0x80) {
+            var count = len & 0x7f;
+            if (count === 0 || count > 4) throw new Error("Unsupported ASN.1 length.");
+            len = 0;
+            for (var i = 0; i < count; i++) {
+              len = (len << 8) | bytes[offset++];
+            }
+          }
+          return len;
+        }
+
+        function readNode() {
+          if (offset >= bytes.length) throw new Error("Truncated ASN.1 node.");
+          var tag = bytes[offset++];
+          var constructed = Boolean(tag & 0x20);
+          var len = readLength();
+          var start = offset;
+          var end = start + len;
+          if (end > bytes.length) throw new Error("ASN.1 length exceeds buffer.");
+
+          var sub = [];
+          if (constructed) {
+            while (offset < end) {
+              sub.push(readNode());
+            }
+          } else {
+            offset = end;
+          }
+          return { tag: tag, bytes: bytes.subarray(start, end), sub: sub };
+        }
+
+        return readNode();
+      }
+
+      function decodeText(bytes) {
+        return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+      }
+
+      function formatName(rdnSeq) {
+        if (!rdnSeq || !rdnSeq.sub) return "Unknown";
+        var parts = [];
+        rdnSeq.sub.forEach(function (setNode) {
+          if (setNode.sub && setNode.sub[0] && setNode.sub[0].sub && setNode.sub[0].sub[1]) {
+            parts.push(decodeText(setNode.sub[0].sub[1].bytes));
+          }
+        });
+        return parts.join(", ") || "Unknown";
+      }
+
+      function parseCertificate(bytes) {
+        var root = parseASN1(bytes);
+        var tbs = root.sub[0];
+        if (!tbs || !tbs.sub || tbs.sub.length < 6) {
+          throw new Error("Input does not look like an X.509 certificate.");
+        }
+        var hasExplicitVersion = (tbs.sub[0].tag & 0xe0) === 0xa0;
+        var idx = hasExplicitVersion ? 1 : 0;
+        var issuer = formatName(tbs.sub[idx + 2]);
+        var validity = tbs.sub[idx + 3];
+        var subject = formatName(tbs.sub[idx + 4]);
+        var validFrom = validity && validity.sub[0] ? decodeText(validity.sub[0].bytes) : "Unknown";
+        var validTo = validity && validity.sub[1] ? decodeText(validity.sub[1].bytes) : "Unknown";
+        return { issuer: issuer, subject: subject, validFrom: validFrom, validTo: validTo };
+      }
+
+      inspectBtn.addEventListener("click", function () {
+        try {
+          var bytes = decodeBase64(pemInput.value);
+          var info = parseCertificate(bytes);
+          outputEl.classList.remove("is-error");
+          outputEl.textContent =
+            "Subject:    " + info.subject + "\n" +
+            "Issuer:     " + info.issuer + "\n" +
+            "Valid From: " + info.validFrom + "\n" +
+            "Valid To:   " + info.validTo;
+        } catch (err) {
+          outputEl.classList.add("is-error");
+          outputEl.textContent = "Error: " + (err && err.message ? err.message : "Invalid certificate.");
+        }
+      });
+    })();
+  </script>
+</body>
 </html>

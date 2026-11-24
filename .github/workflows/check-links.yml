@@ -8,11 +8,15 @@ on:
     branches:
       - main
     paths:
+      - "_data/optout.yml"
+      - "_layouts/optout.html"
       - "optout-guide.md"
       - ".github/scripts/check_links.py"
       - ".github/workflows/check-links.yml"
   pull_request:
     paths:
+      - "_data/optout.yml"
+      - "_layouts/optout.html"
       - "optout-guide.md"
       - ".github/scripts/check_links.py"
       - ".github/workflows/check-links.yml"
